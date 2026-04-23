@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Busints | Procesador Premium</title>
+    
+    <!-- Prevenir cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <!-- jspreadsheet -->
+    <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+    <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="./assets/css/variables.css">
+    <link rel="stylesheet" href="./assets/css/layout.css">
+    <link rel="stylesheet" href="./assets/css/components.css">
+    
+    <style>
+        /* Estilos específicos para la transición suave */
+        body { opacity: 0; transition: opacity 0.5s ease; }
+        body.loaded { opacity: 1; }
+        
+        #auth-overlay {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #auth-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .spinner-premium {
+            width: 50px; height: 50px;
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Estilo para el modo automático */
+        .auto-status {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            display: none;
+        }
+    </style>
+</head>
+<body class="loaded">
+    <!-- Overlay de Autenticación Moderno -->
+    <div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div class="auth-card">
+            <div class="spinner-premium"></div>
+            <h2 style="margin-bottom: 8px;">Conectando...</h2>
+            <p id="auth-status-text" style="color: #64748b; font-size: 14px;">Validando acceso a Supabase</p>
+            
+            <div id="auth-debug-btns" style="display: none; margin-top: 24px;">
+                <p style="color: #ef4444; font-size: 12px; margin-bottom: 12px;">¿Problemas de conexión?</p>
+                <button onclick="window.location.reload()" style="background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 500;">Reintentar</button>
+                <button id="forceEnterBtn" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-left: 8px; font-weight: 500;">Forzar Entrada</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1><i class="fas fa-bolt"></i> MAP | Procesador Automático</h1>
+                    <p style="color: #64748b; margin-top: 4px;">Pegue desde Excel y nosotros hacemos el resto</p>
+                </div>
+                <div id="user-info-area"></div>
+            </div>
+        </div>
+
+        <!-- Spreadsheet Section -->
+        <div class="spreadsheet-section" id="spreadsheet-section" style="margin-bottom: 24px;">
+            <div id="spreadsheet" style="width: 100%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);"></div>
+        </div>
+
+        <!-- Vista de Resultados Premium -->
+        <div id="results-view" style="display: none; animation: fadeIn 0.5s ease-out;">
+            <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02); padding: 50px 30px; text-align: center; border: 1px solid #f1f5f9; margin-bottom: 30px;">
+                
+                <div style="width: 80px; height: 80px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                    <i class="fas fa-check" style="font-size: 32px; color: #16a34a;"></i>
+                </div>
+                
+                <h2 style="font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Sincronización Exitosa</h2>
+                <p style="color: #64748b; font-size: 16px; margin-bottom: 40px;">Los registros han sido procesados y almacenados en la nube.</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 750px; margin: 0 auto 30px;">
+                    <style>
+                        .stat-card {
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            cursor: default;
+                        }
+                        .stat-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1) !important;
+                        }
+                    </style>
+                    
+                    <!-- Actualizados -->
+                    <div class="stat-card" style="background: #eff6ff; padding: 20px 15px; border-radius: 16px; position: relative; overflow: hidden; color: #1e40af; text-align: left; border: 1px solid #dbeafe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <div style="position: relative; z-index: 2;">
+                            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; margin-bottom: 2px;">Actualizados</div>
+                            <div id="res-updated" style="font-size: 32px; font-weight: 800; line-height: 1;">0</div>
+                        </div>
+                        <i class="fas fa-sync-alt" style="position: absolute; right: -5px; bottom: -5px; font-size: 60px; color: #3b82f6; opacity: 0.1; transform: rotate(-15deg); z-index: 1;"></i>
+                    </div>
+                    
+                    <!-- Nuevos -->
+                    <div class="stat-card" style="background: #f0fdf4; padding: 20px 15px; border-radius: 16px; position: relative; overflow: hidden; color: #166534; text-align: left; border: 1px solid #dcfce7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <div style="position: relative; z-index: 2;">
+                            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; margin-bottom: 2px;">Nuevos</div>
+                            <div id="res-inserted" style="font-size: 32px; font-weight: 800; line-height: 1;">0</div>
+                        </div>
+                        <i class="fas fa-plus-circle" style="position: absolute; right: -5px; bottom: -5px; font-size: 60px; color: #10b981; opacity: 0.1; transform: rotate(-15deg); z-index: 1;"></i>
+                    </div>
+
+                    <!-- Errores -->
+                    <div class="stat-card" style="background: #fff1f2; padding: 20px 15px; border-radius: 16px; position: relative; overflow: hidden; color: #991b1b; text-align: left; border: 1px solid #ffe4e6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <div style="position: relative; z-index: 2;">
+                            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; margin-bottom: 2px;">Errores</div>
+                            <div id="res-errors" style="font-size: 32px; font-weight: 800; line-height: 1;">0</div>
+                        </div>
+                        <i class="fas fa-exclamation-triangle" style="position: absolute; right: -5px; bottom: -5px; font-size: 60px; color: #ef4444; opacity: 0.1; transform: rotate(-15deg); z-index: 1;"></i>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; align-items: center;">
+                    <button id="backToTableBtn" class="btn" style="background: #1e293b; color: white; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <i class="fas fa-arrow-left"></i> Volver a la tabla
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Status Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid #f1f5f9;">
+            <div id="statusBadge" class="status-badge status-idle">
+                <i class="fas fa-info-circle"></i> <span>Esperando datos de Excel...</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <!-- Herramientas que aparecen dinámicamente -->
+                <div id="action-tools" style="display: flex; gap: 8px; opacity: 0; pointer-events: none; transition: all 0.3s;">
+                    <button id="viewJsonBtn" class="btn-action-small" title="Ver JSON">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                    <button id="downloadJsonBtn" class="btn-action-small" title="Descargar">
+                        <i class="fas fa-download"></i> Descargar
+                    </button>
+                    <button id="copyJsonBtn" class="btn-action-small" title="Copiar">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    
+                    <!-- Botones técnicos ocultos -->
+                    <div style="display: none;">
+                        <button id="processBtn"></button>
+                        <button id="uploadBtn"></button>
+                        <button id="downloadJsonBtnAlt"></button>
+                        <button id="copyJsonBtnAlt"></button>
+                    </div>
+                </div>
+
+                <!-- El botón de limpiar siempre al final (derecha) -->
+                <button id="clearBtn" class="btn-danger" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fas fa-trash-alt"></i> Limpiar Tabla
+                </button>
+            </div>
+        </div>
+
+        <style>
+            .btn-action-small {
+                background: #f8fafc;
+                color: #475569;
+                border: 1px solid #e2e8f0;
+                padding: 10px 15px;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .btn-action-small:hover {
+                background: #eff6ff;
+                color: #3b82f6;
+                border-color: #bfdbfe;
+            }
+        </style>
+
+        <!-- Statistics (Floating/Hidden) -->
+        <div id="statsArea" style="display: none; margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 12px; font-size: 13px; color: #64748b; gap: 20px;">
+            <span><i class="fas fa-columns"></i> <span id="colCount">0</span> Columnas</span>
+            <span><i class="fas fa-rows"></i> <span id="rowCount">0</span> Filas</span>
+            <span><i class="fas fa-tag"></i> <span id="headerType">-</span></span>
+        </div>
+
+        <!-- JSON Preview (Hidden by default) -->
+        <div id="jsonPreview" style="display: none; margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+            <div style="background: #f8fafc; padding: 10px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 13px;">
+                <span style="font-weight: 600;"><i class="fas fa-code text-primary"></i> Vista Previa JSON</span>
+                <span id="jsonCount" style="color: #64748b;">0 registros</span>
+            </div>
+            <pre id="jsonContent" style="margin: 0; background: #1e293b; color: #e2e8f0; padding: 20px; font-size: 12px; overflow: auto; max-height: 250px;"></pre>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { supabase } from './src/config/supabase.js';
+
+        const overlay = document.getElementById('auth-overlay');
+        const statusText = document.getElementById('auth-status-text');
+        const debugBtns = document.getElementById('auth-debug-btns');
+        const forceBtn = document.getElementById('forceEnterBtn');
+
+        // Fail-safe
+        const failSafe = setTimeout(() => {
+            debugBtns.style.display = 'block';
+            statusText.textContent = 'La verificación está tardando demasiado';
+        }, 6000);
+
+        async function checkAuth() {
+            try {
+                statusText.textContent = 'Verificando sesión activa...';
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // Éxito
+                clearTimeout(failSafe);
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 400);
+                console.log('✅ Autenticado como:', session.user.email);
+                
+                // Mostrar Info de Usuario (Priorizando Nombre Real)
+                const meta = session.user.user_metadata;
+                const userName = meta?.full_name || session.user.email;
+                const userRole = meta?.role || 'Usuario';
+                const userCedula = meta?.cedula || '';
+
+                document.getElementById('user-info-area').innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600; font-size: 14px; color: #1e293b;">${userName}</div>
+                            <div style="font-size: 11px; color: #64748b; font-weight: 500;">${userRole}</div>
+                        </div>
+                        <button id="logoutBtn" title="Cerrar Sesión" style="background: #fff1f2; border: 1px solid #fecaca; width: 38px; height: 38px; border-radius: 12px; color: #ef4444; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('logoutBtn').onclick = async () => {
+                    try {
+                        console.log('🚪 Cerrando sesión...');
+                        await supabase.auth.signOut();
+                        
+                        // Limpieza profunda de seguridad
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        
+                        // Redirección inmediata
+                        window.location.href = 'login.html';
+                    } catch (err) {
+                        console.error('Error al cerrar sesión:', err);
+                        // Fallback: si falla la API, forzamos salida de todos modos
+                        localStorage.clear();
+                        window.location.href = 'login.html';
+                    }
+                };
+
+            } catch (err) {
+                console.error('Error Auth:', err);
+                statusText.textContent = 'Error: ' + err.message;
+                debugBtns.style.display = 'block';
+            }
+        }
+
+        forceBtn.onclick = () => {
+            clearTimeout(failSafe);
+            overlay.style.display = 'none';
+        };
+
+        // Iniciar
+        checkAuth();
+    </script>
+    
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

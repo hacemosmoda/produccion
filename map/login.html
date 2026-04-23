@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Access Busints</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: #3b82f6;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-login:hover {
+            background: #2563eb;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            color: #94a3b8;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 32px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h1>Access Busints</h1>
+            <p>Sistema de gestión de datos</p>
+        </div>
+
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <form id="loginForm" onsubmit="return false;">
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="usuario@ejemplo.com"
+                    required
+                    autocomplete="email"
+                    autofocus
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Ingrese su contraseña"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" id="loginBtn" class="btn-login">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="divider"></div>
+
+        <div class="footer">
+            <i class="fas fa-shield-alt"></i>
+            Conexión segura con Supabase
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './src/config/supabase.js'
+
+        console.log('🔐 Inicializando login...')
+
+        const form = document.getElementById('loginForm')
+        const errorMessage = document.getElementById('errorMessage')
+        const errorText = document.getElementById('errorText')
+        const loginBtn = document.getElementById('loginBtn')
+        const emailInput = document.getElementById('email')
+        const passwordInput = document.getElementById('password')
+
+        // Verificar si ya está autenticado
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+            console.log('✅ Ya autenticado, redirigiendo...')
+            window.location.href = 'index.html'
+        }
+
+        // Manejar submit del formulario
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault() // CRÍTICO: Prevenir submit tradicional
+            e.stopPropagation()
+            
+            console.log('📝 Formulario enviado')
+            
+            const email = emailInput.value.trim()
+            const password = passwordInput.value
+            
+            console.log('Email:', email)
+            console.log('Password length:', password.length)
+
+            if (!email || !password) {
+                errorText.textContent = 'Complete todos los campos'
+                errorMessage.classList.add('show')
+                return
+            }
+
+            // Deshabilitar botón y mostrar loading
+            loginBtn.disabled = true
+            loginBtn.innerHTML = '<span class="spinner"></span> Iniciando sesión...'
+            errorMessage.classList.remove('show')
+
+            try {
+                console.log('🔄 Intentando autenticar con Supabase...')
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                })
+
+                console.log('Respuesta de Supabase:', { data, error })
+
+                if (error) {
+                    throw error
+                }
+
+                // Login exitoso
+                console.log('✅ Login exitoso!')
+                console.log('Usuario:', data.user.email)
+                console.log('Session:', data.session)
+                
+                // Redirigir a index
+                window.location.href = 'index.html'
+
+            } catch (error) {
+                console.error('❌ Error de login:', error)
+                
+                let message = 'Error al iniciar sesión'
+                
+                if (error.message.includes('Invalid login credentials')) {
+                    message = 'Credenciales incorrectas'
+                } else if (error.message.includes('Email not confirmed')) {
+                    message = 'Email no confirmado'
+                } else if (error.message.includes('Invalid email')) {
+                    message = 'Email inválido'
+                } else {
+                    message = error.message
+                }
+                
+                errorText.textContent = message
+                errorMessage.classList.add('show')
+                
+                // Restaurar botón
+                loginBtn.disabled = false
+                loginBtn.innerHTML = 'Iniciar Sesión'
+            }
+        })
+
+        // También manejar Enter en los inputs
+        emailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                passwordInput.focus()
+            }
+        })
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                form.dispatchEvent(new Event('submit'))
+            }
+        })
+    </script>
+</body>
+</html>

@@ -41,15 +41,7 @@
                     <p>Copie desde BUSINT y pegue aquí, que nosotros hacemos la magia</p>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <button id="btnRegBio" style="background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; color: #3b82f6; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
-                        <i class="fas fa-fingerprint"></i>
-                        <span>Activar Huella / FaceID</span>
-                    </button>
                     <div id="user-info-area"></div>
-                    <button id="logout-btn" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Salir</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -229,7 +221,6 @@
     <!-- Scripts -->
     <script type="module">
         import { supabase } from './src/config/supabase.js';
-        import { BiometricService } from './src/services/BiometricService.js';
 
         async function checkAuth() {
             try {
@@ -242,31 +233,6 @@
 
                 console.log('✅ Autenticado como:', session.user.email);
                 
-                // Lógica de registro de Biometría
-                document.getElementById('btnRegBio').addEventListener('click', async () => {
-                    const btn = document.getElementById('btnRegBio');
-                    const originalText = btn.innerHTML;
-                    
-                    try {
-                        btn.disabled = true;
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accediendo al sensor...';
-                        
-                        // USAMOS NUESTRO NUEVO SERVICIO NATIVO
-                        await BiometricService.register();
-                        
-                        alert("✅ ¡Éxito! Tu huella/FaceID ha sido vinculada nativamente. Ya puedes usarla en el login.");
-                        btn.style.borderColor = '#10b981';
-                        btn.style.color = '#10b981';
-                        btn.innerHTML = '<i class="fas fa-check"></i> Biometría Activa';
-                        
-                    } catch (err) {
-                        console.error('Error al registrar biometría:', err);
-                        alert("No se pudo registrar: " + err.message);
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    }
-                });
-
                 // Mostrar Info de Usuario (Priorizando Nombre Real)
                 const meta = session.user.user_metadata;
                 const userName = meta?.full_name || session.user.email;

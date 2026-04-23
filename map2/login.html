@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Access Busints</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: #3b82f6;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-biometric {
+            width: 100%;
+            padding: 12px;
+            background: #f8fafc;
+            color: #3b82f6;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-biometric:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h1>B I O | Gateway</h1>
+            <p>Acceso seguro nativo</p>
+        </div>
+
+        <div id="authError" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <!-- Botón Biométrico Nativo -->
+        <button id="btnBiometric" class="btn-biometric">
+            <i class="fas fa-fingerprint"></i>
+            Acceso Biométrico (FaceID/Huella)
+        </button>
+
+        <form id="loginForm" onsubmit="return false;">
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" id="email" required autocomplete="email" placeholder="usuario@ejemplo.com">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••">
+            </div>
+
+            <button type="submit" id="loginBtn" class="btn-login">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="divider"></div>
+
+        <button id="btnMagicLink" style="background:none; border:none; color:#3b82f6; font-size:13px; cursor:pointer; width:100%; text-align:center;">
+            Entrar sin contraseña ( Magic Link )
+        </button>
+    </div>
+
+    <script type="module">
+        import { supabase } from './src/config/supabase.js'
+        import { BiometricService } from './src/services/BiometricService.js'
+
+        const btnBiometric = document.getElementById('btnBiometric');
+        const loginForm = document.getElementById('loginForm');
+        const authError = document.getElementById('authError');
+        const errorText = document.getElementById('errorText');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnMagicLink = document.getElementById('btnMagicLink');
+
+        // Detectar biometría
+        async function detectBiometrics() {
+            if (window.PublicKeyCredential) {
+                const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                if (isAvailable) btnBiometric.style.display = 'flex';
+            }
+        }
+
+        btnBiometric.onclick = async () => {
+            btnBiometric.disabled = true;
+            try {
+                const result = await BiometricService.login();
+                
+                if (result.success) {
+                    // Si la huella es válida, entramos (En este flujo usamos persistencia)
+                    alert("✅ Identidad confirmada por biometría. Entrando...");
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                showError('No se encontró una llave válida: ' + err.message);
+                btnBiometric.disabled = false;
+            }
+        };
+
+        loginForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner"></span>';
+            
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                showError(error.message);
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Iniciar Sesión';
+            } else {
+                window.location.href = 'index.html';
+            }
+        };
+
+        btnMagicLink.onclick = async () => {
+            const email = document.getElementById('email').value;
+            if (!email) return showError('Escribe tu email primero');
+            const { error } = await supabase.auth.signInWithOtp({ email });
+            if (error) showError(error.message);
+            else alert('Enlace enviado a tu email');
+        };
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            authError.style.display = 'flex';
+        }
+
+        detectBiometrics();
+    </script>
+</body>
+</html>

@@ -32,15 +32,35 @@ body {
     position: relative;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 28px;
-    background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Brand Cluster: Sistema de Logos Refactorizado */
+.brand-cluster {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    padding-bottom: 8px;
+}
+
+.logo-main {
+    height: 38px;
+    width: auto;
+}
+
+.logo-sub {
+    height: 32px;
+    width: auto;
+}
+
+.brand-sep {
+    font-size: 16px;
+    color: #cbd5e1;
+    font-weight: 300;
+    user-select: none;
+}
+
+.header p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
 }
 
 .status-badge {

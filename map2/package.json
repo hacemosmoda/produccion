@@ -1,0 +1,31 @@
+{
+  "name": "access-busints",
+  "version": "1.0.0",
+  "description": "Aplicación web profesional Access Busints para convertir datos a formato JSON estructurado",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx http-server -p 8080 -o -c-1",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write \"src/**/*.js\" \"assets/**/*.css\"",
+    "test": "echo \"Tests not configured yet\" && exit 0"
+  },
+  "keywords": [
+    "access-busints",
+    "json",
+    "data-processing",
+    "converter",
+    "business"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "http-server": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

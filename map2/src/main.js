@@ -30,8 +30,6 @@ class Application {
      * Inicializa la aplicación
      */
     init() {
-        console.log('🚀 Iniciando aplicación Access Busints → JSON');
-        
         // Inicializar spreadsheet tipo Excel con callback automático
         this.domManager.initSpreadsheet(() => {
             this.eventHandler.handleAutoProcessAndUpload();
@@ -42,9 +40,6 @@ class Application {
         
         // Registrar eventos
         this.eventHandler.registerEvents();
-        
-        console.log('✅ Aplicación inicializada correctamente');
-        console.log('💡 Pegue datos desde Excel en la tabla (Ctrl+V o Cmd+V)');
     }
 }
 
@@ -65,4 +60,3 @@ if (document.readyState === 'loading') {
     // El DOM ya está listo (posible debido a top-level await en otros módulos)
     startApp();
 }
-

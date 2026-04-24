@@ -18,4 +18,3 @@ export const SUPABASE_CONFIG = {
     anonKey: SUPABASE_ANON_KEY,
     functionUrl: `${SUPABASE_URL}/functions/v1/upload-data`
 }
-

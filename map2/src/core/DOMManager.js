@@ -113,7 +113,7 @@ export class DOMManager {
                 noCellsSelected: 'No hay celdas seleccionadas'
             },
             onpaste: (instance, data) => {
-                console.log('📋 Datos pegados en spreadsheet');
+                
                 if (onPasteCallback) {
                     // Dar un pequeño respiro para que el DOM se actualice con los datos pegados
                     setTimeout(() => onPasteCallback(), 100);
@@ -121,7 +121,7 @@ export class DOMManager {
             }
         });
         
-        console.log('✅ Spreadsheet inicializado');
+        
     }
 
     /**

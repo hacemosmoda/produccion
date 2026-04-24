@@ -2,9 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
     <title>Access Busints | Procesador Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.svg">
     
+    <!-- Content Security Policy (Seguridad contra XSS) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://bossanova.uk https://jsuites.net https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://bossanova.uk https://jsuites.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://zpikjjcbievfpzegupmw.supabase.co wss://zpikjjcbievfpzegupmw.supabase.co;">
+
     <!-- Prevenir cache -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     
@@ -231,7 +240,7 @@
                     return;
                 }
 
-                console.log('✅ Autenticado como:', session.user.email);
+                
                 
                 // Mostrar Info de Usuario (Priorizando Nombre Real)
                 const meta = session.user.user_metadata;
@@ -253,11 +262,12 @@
                 document.getElementById('logoutBtn').onclick = async () => {
                     try {
                         await supabase.auth.signOut();
-                        localStorage.clear();
+                        // Solo borrar datos de sesión, PRESERVAR biometría
+                        localStorage.removeItem('sispro_user');
                         sessionStorage.clear();
                         window.location.href = 'login.html';
                     } catch (err) {
-                        localStorage.clear();
+                        localStorage.removeItem('sispro_user');
                         window.location.href = 'login.html';
                     }
                 };
